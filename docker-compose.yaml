@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  django:
+    build: ./docker/django
+    command: >
+      bash -c '
+        python manage.py migrate &&
+        python manage.py runserver 0.0.0.0:4567
+      '
+    ports:
+      - 4567:4567
+    volumes:
+      - ./src:/opt/src
+    working_dir: /opt/src
