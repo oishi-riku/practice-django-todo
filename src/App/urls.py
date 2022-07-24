@@ -1,7 +1,11 @@
 from django.urls import path
-from . import apis
+from rest_framework.urlpatterns import format_suffix_patterns
+# from . import apis
+from . import views
 
 urlpatterns = [
-    path('api/', apis.TodoList.as_view(), name = 'api'),
-    path('api/<int:pk>/', apis.TodoListItem.as_view(), name = 'api_single'),
+    path('api/todo', views.TodoCollection.as_view(), name='todo_collection'),
+    path('api/todo/<int:pk>', views.TodoSingle.as_view(), name='todo_single'),
 ]
+
+urlpatterns = format_suffix_patterns(urlpatterns)
