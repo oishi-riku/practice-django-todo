@@ -1,25 +1,23 @@
-from rest_framework.views import APIView
 from .models import TodoModel
-from django.http import Http404
 from .serializers import Serializer
-from rest_framework.response import Response
+from rest_framework import generics, filters, pagination
+from django_filters.rest_framework import DjangoFilterBackend
 
-class TodoCollection(APIView):
-    def get(self, request, format=None):
-        todo_list = TodoModel.objects.all()
-        serializer = Serializer(todo_list, many=True)
+class Pagination(pagination.LimitOffsetPagination):
+    page_size = 5
 
-        return Response(serializer.data)
+# Generic View
 
-class TodoSingle(APIView):
-    def get_object(self, pk):
-        try:
-            return TodoModel.objects.get(pk=pk)
-        except TodoModel.DoesNotExist:
-            raise Http404
+class TodoCollection(generics.ListCreateAPIView):
+    queryset = TodoModel.objects.filter()
+    serializer_class = Serializer
+    pagination_class = Pagination
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    filterset_fields = ['title']
+    search_fields = ['content', '=title']
 
-    def get(self, request, pk, format=None):
-        todo_item = self.get_object(pk)
-        serializer = Serializer(todo_item)
+class TodoSingle(generics.RetrieveUpdateDestroyAPIView):
+    queryset = TodoModel.objects.all()
+    serializer_class = Serializer
 
-        return Response(serializer.data)
+# View Set
